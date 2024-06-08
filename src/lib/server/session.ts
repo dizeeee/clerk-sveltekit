@@ -1,16 +1,26 @@
+import { signedInAuthObject, verifyToken, type SignedInAuthObject } from '@clerk/backend'
 
-import { verifyToken } from '@clerk/backend'
-
-export const verifySession = async (secretKey: string, sessionToken: string) => {
+export const verifySession = async (
+	apiUrl: string,
+	secretKey: string,
+	sessionToken: string
+): Promise<SignedInAuthObject | undefined> => {
 	if (sessionToken) {
-		const issuer = (issuer: string) => issuer.startsWith('https://clerk.') || issuer.includes('.clerk.accounts')
+		const issuer = (issuer: string) =>
+			issuer.startsWith('https://clerk.') || issuer.includes('.clerk.accounts')
+
 		const claims = await verifyToken(sessionToken, {
 			secretKey,
 			issuer,
 		})
-		return {
-			userId: claims.sub,
-			claims,
-		}
+
+		const authObject = signedInAuthObject(claims, {
+			apiUrl: apiUrl,
+			apiVersion: 'v1',
+			secretKey: secretKey,
+			token: sessionToken,
+		})
+
+		return authObject
 	}
 }

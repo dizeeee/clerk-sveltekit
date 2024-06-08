@@ -1,6 +1,6 @@
 // See https://kit.svelte.dev/docs/types#app
 
-import type { UserResource } from "@clerk/types";
+import type { User } from '@clerk/backend'
 
 // for information about these interfaces
 declare global {
@@ -11,6 +11,7 @@ declare global {
 				| {
 						userId: string
 						claims: unknown
+						user?: User
 				  }
 				| undefined
 		}
@@ -22,7 +23,7 @@ declare global {
 export {}
 
 declare global {
-  interface DocumentEventMap {
-    'clerk-sveltekit:user': CustomEvent<UserResource>;
-  }
+	interface DocumentEventMap {
+		'clerk-sveltekit:user': CustomEvent<UserResource>
+	}
 }

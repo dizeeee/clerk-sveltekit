@@ -11,6 +11,7 @@ type ProtectedPath =
 	| ((event: RequestEvent<Partial<Record<string, string>>, string | null>) => boolean)
 
 export default function handleClerk(
+	apiUrl: string,
 	secretKey: string,
 	{
 		debug = false,
@@ -30,10 +31,14 @@ export default function handleClerk(
 		if (sessionToken) {
 			debug && console.log('[Clerk SvelteKit] Found session token in cookies.')
 			try {
-				const session = await verifySession(secretKey, sessionToken)
+				const session = await verifySession(apiUrl, secretKey, sessionToken)
 				if (session) {
 					debug && console.log('[Clerk SvelteKit] Session verified successfully.')
-					event.locals.session = session
+					event.locals.session = {
+						claims: session.sessionClaims,
+						userId: session.userId,
+						user: session.user ?? undefined,
+					}
 				} else {
 					debug && console.warn('[Clerk SvelteKit] Session verification returned no session.')
 				}
